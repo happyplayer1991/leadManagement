@@ -1,0 +1,1088 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Opal CRM",
+        "description": "Swagger creates human-readable documentation for your APIs.",
+        "contact": {
+            "name": "Kloudportal Opal Team",
+            "email": "contactus@kloudportal.com"
+        },
+        "license": {
+            "name": "Unlicense"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost",
+    "basePath": "/api",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/activities": {
+            "get": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "List all the Activities",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all activities."
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Create new Activity",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NewActivity"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A newly-created Activity"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/activityComplete/{id}": {
+            "post": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Complete Activity",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Completed the Activity"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/activities/{id}": {
+            "get": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Fetch Activity",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "activity id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all activities."
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/todaysTask": {
+            "get": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Fetch week activities.",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all week activities."
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/activityleads": {
+            "get": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Fetch all the Active leads for Activities.",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all Active Leads."
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/activitytype": {
+            "get": {
+                "tags": [
+                    "Activities"
+                ],
+                "summary": "Activity Types.",
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all Activity Types."
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/invoices": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "List all the Invoices",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoices Json"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/invoices/{id}": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Fetch Invoice",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "fetch the invoice data"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leads": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the lead in Lead Stage",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n    'status': 'true',\n    'data': [\n                {\n                    'id': 6,\n                    'name': 'test',\n                    'lead_number': '0003'\n                }\n            ]\n        }"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Create new Lead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "body",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NewLead"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A newly-created lead"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leads/{id}": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Fetch lead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "lead data"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leads/{id}/edit": {
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Edit lead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EditLead"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An lead"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leads/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Drop lead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DropLead"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Delete an employee"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/opportunities": {
+            "get": {
+                "tags": [
+                    "Opportunities"
+                ],
+                "summary": "List all the lead in opportunity Stage",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n                'status': 'true',\n                'data': [\n                    {\n                        'id': 4,\n                        'name': 'sowjitha kokkarapalle',\n                        'lead_number': '0001'\n                    }\n                ]\n            }"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/quote": {
+            "get": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "List all the lead in quotation Stage",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n                    'status': 'true',\n                    'data': [\n                        {\n                            'quotation_id': 2,\n                            'quotation_number': '0002',\n                            'status': 'submitted',\n                            'lead_id': 3,\n                            'lead_name': '',\n                            'lead_number': ''\n                        }\n                    ]\n                }"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/won": {
+            "get": {
+                "tags": [
+                    "won"
+                ],
+                "summary": "List all the lead in won Stage",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n                    'status': 'true',\n                    'data': [\n                        {\n                            'invoice_id': 1,\n                            'invoice_number': '0001',\n                            'currency': 'AUD($)',\n                            'public_notes': 'Pending',\n                            'amount': '33',\n                            'lead_id': 7,\n                            'lead_name': 'testleaddata',\n                            'lead_number': '0004'\n                        }\n                    ]\n                }"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/movelead/{id}": {
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Move lead to Quote and Opportunity",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveLead"
+                        },
+                        "type": "integer"
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "body",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveLead"
+                        },
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "body",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveLead"
+                        },
+                        "type": "integer"
+                    },
+                    {
+                        "name": "stage",
+                        "in": "body",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/MoveLead"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Moved Successfully"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/mobileleads": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the lead in won Stage",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "pass user_id as parameter",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n                    'status': 'true',\n                    'data': [\n                        {\n                            'invoice_id': 1,\n                            'invoice_number': '0001',\n                            'currency': 'AUD($)',\n                            'public_notes': 'Pending',\n                            'amount': '33',\n                            'lead_id': 7,\n                            'lead_name': 'testleaddata',\n                            'lead_number': '0004'\n                        }\n                    ]\n                }"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/interestProducts": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the interestProducts.",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lists all the interested_products"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/industries": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the industries.",
+                "responses": {
+                    "200": {
+                        "description": "Lists all the interested_products"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leadtype": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the leadTypes.",
+                "responses": {
+                    "200": {
+                        "description": "Lists all the types of leads"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leadstatus": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Lead Status List.",
+                "responses": {
+                    "200": {
+                        "description": "Lists all the status"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all the users based on Company.",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "pass company_id as parameter",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lists all the Users"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/leadsource": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Lead Source List.",
+                "responses": {
+                    "200": {
+                        "description": "Lists all the Sources"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/dropstatus": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Lead Drop List.",
+                "responses": {
+                    "200": {
+                        "description": "Lists all the Drop reasons"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login User",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        },
+                        "type": "String"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n    'status': 'true',\n    'data': {\n        'id': 1,\n        'name': 'Admin',\n        'email': 'admin@admin.com',\n        'address': '',\n        'work_number': '0',\n        'personal_number': '0',\n        'image_path': '',\n        'state_id': null,\n        'company_id': '1515483847',\n        'date_expired': null,\n        'company_name': 'admin',\n        'random_unique_number': '1515483850',\n        'created_at': '2016-06-04 13:42:19',\n        'updated_at': '2016-06-04 13:42:19',\n        'company_code': '',\n        'user_number': ''\n    }\n}  "
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Logs out current logged in user session",
+                "responses": {
+                    "200": {
+                        "description": "user logged out."
+                    }
+                }
+            }
+        },
+        "/quotations": {
+            "get": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "List all the Quotations",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quotations Json"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/quotation/{id}": {
+            "get": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "Fetch Quotation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "fetch the quotation data"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "quotation/approved/{id}": {
+            "post": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "approve quotation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Quotation"
+                        },
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quotation Approved Sucessfully"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "quotation/rejected/{id}": {
+            "post": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "reject quotation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Quotation"
+                        },
+                        "type": "integer"
+                    },
+                    {
+                        "name": "reason",
+                        "in": "body",
+                        "description": "reason for quotation reject",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Quotation"
+                        },
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quotation Rejected"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Fetch User",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Userdata"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        },
+        "/users/{id}/edit": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Edit User",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\n    'status': 'true',\n    'data': {\n        'id': 1,\n        'name': 'Admin',\n        'email': 'admin@admin.com',\n        'address': '',\n        'work_number': '0',\n        'personal_number': '0',\n        'image_path': '',\n        'state_id': null,\n        'company_id': '1515483847',\n        'date_expired': null,\n        'company_name': 'admin',\n        'random_unique_number': '1515483850',\n        'created_at': '2016-06-04 13:42:19',\n        'updated_at': '2016-06-04 13:42:19',\n        'company_code': '',\n        'user_number': ''\n    }\n}"
+                    },
+                    "default": {
+                        "description": "error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Timestamps": {
+            "properties": {
+                "created_at": {
+                    "description": "Creation date",
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2017-03-01 00:00:00"
+                },
+                "updated_at": {
+                    "description": "Last updated",
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2017-03-01 00:00:00"
+                }
+            }
+        },
+        "NewActivity": {
+            "required": [
+                "name",
+                "date",
+                "details",
+                "lead_id",
+                "status",
+                "company_id",
+                "user_id"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Activity name",
+                    "type": "string",
+                    "example": "John"
+                },
+                "date": {
+                    "description": "Creation date",
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2017-03-01 00:00:00"
+                },
+                "details": {
+                    "description": "Description",
+                    "type": "string",
+                    "example": "activity added for this lead"
+                },
+                "lead_id": {
+                    "description": "Activity Created for particular Lead",
+                    "type": "string",
+                    "example": "1"
+                },
+                "user_id": {
+                    "description": "User who creates the Lead",
+                    "type": "string",
+                    "example": "1"
+                },
+                "company_id": {
+                    "description": "Company who created the lead",
+                    "type": "string",
+                    "example": "123468976"
+                },
+                "status": {
+                    "description": "Company who created the lead",
+                    "type": "string",
+                    "example": "Scheduled"
+                }
+            }
+        },
+        "Activity": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NewActivity"
+                },
+                {
+                    "$ref": "#/definitions/Timestamps"
+                },
+                {
+                    "required": [
+                        "id"
+                    ]
+                }
+            ]
+        },
+        "NewLead": {
+            "required": [
+                "name",
+                "email",
+                "primary_number",
+                "lead_type",
+                "user_id",
+                "company_id",
+                "lead_stage"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Lead name",
+                    "type": "string",
+                    "example": "John"
+                },
+                "email": {
+                    "description": "Lead Email",
+                    "type": "string",
+                    "example": "john@gamil.com"
+                },
+                "primary_number": {
+                    "description": "Lead mobile number",
+                    "type": "string",
+                    "example": "1234567890"
+                },
+                "lead_type": {
+                    "description": "Lead type",
+                    "type": "string",
+                    "example": "hot"
+                },
+                "user_id": {
+                    "description": "User who creates the Lead",
+                    "type": "string",
+                    "example": "1"
+                },
+                "company_id": {
+                    "description": "Company who created the lead",
+                    "type": "string",
+                    "example": "123468976"
+                },
+                "lead_stage": {
+                    "description": "Lead Stage",
+                    "type": "string",
+                    "example": "Lead"
+                }
+            }
+        },
+        "Lead": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NewLead"
+                },
+                {
+                    "$ref": "#/definitions/Timestamps"
+                },
+                {
+                    "required": [
+                        "id"
+                    ]
+                }
+            ]
+        }
+    }
+}

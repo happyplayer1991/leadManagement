@@ -1,0 +1,64 @@
+APP_ENV=development
+
+APP_DEBUG=true
+
+APP_KEY=i53weLzCSdunQzNc2SXR2AE9XJVDuNaq
+
+#Change the app URL accordingly.
+
+
+APP_URL=http://dev.opalcrm.com
+
+DB_HOST=localhost
+DB_DATABASE=kloudcrm
+DB_USERNAME=root
+DB_PASSWORD=d3v3lop3r123
+
+DEBUGBAR_ENABLED=false
+
+CACHE_DRIVER=array
+
+SESSION_DRIVER=file
+
+QUEUE_DRIVER=sync
+
+REDIS_HOST=localhost
+
+REDIS_PASSWORD=null
+
+REDIS_PORT=6379
+
+MAIL_DRIVER= mailgun
+MAILGUN_DOMAIN = sandboxc086253f58ef44ffb4c35f2f6f8a2600.mailgun.org
+
+MAIL_HOST = smtp.mailgun.org
+
+MAIL_PORT =587
+MAIL_USERNAME = postmaster@sandboxc086253f58ef44ffb4c35f2f6f8a2600.mailgun.org
+
+MAIL_PASSWORD = 74c8c11359352d66e59ff429f9a7cd4b
+
+MAILGUN_SECRET = key5691a476b21a0eb32559fc23fccc26cb
+
+MAIL_FROM = support@kloudportal.com
+
+MAIL_ENCRYPTION=tls
+
+MAIL_ADDRESS_FROM=support@kloudportal.com
+
+MAIL_ADDRESS_NAME=Opalcrm
+
+#Stripe Keys
+STRIPE_KEY=pk_test_pUmn2CzKSqmBiobW5wvolHvr
+
+STRIPE_SECRET=sk_test_W0R81qsMRfmJqRmHYKUXikcA
+
+
+#PayPal support email.
+
+PAYPAL_EMAIL = support@kloudportal.com
+
+#Days where free users can use it.
+
+USER_DATE_EXPIRY= 120
+USER_NUMBER=3

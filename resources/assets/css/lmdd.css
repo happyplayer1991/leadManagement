@@ -1,0 +1,336 @@
+.no-display {
+    display: none !important;
+}
+
+.no-transition, .no-transition * {
+    transition: none !important;
+}
+
+.unselectable {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    cursor: not-allowed;
+}
+.hidden-layer,
+.hidden-layer * {
+    opacity: 0;
+    z-index:1;
+    cursor:crosshair !important;
+}
+.visible-layer,
+.visible-layer * {
+    opacity:1;
+    z-index:-1;
+    pointer-events: none;
+    transition: all 0.7s;
+}
+.visible-layer .lmdd-mirror.gf-transition{
+    transition:all 0.3s !important;
+}
+.visible-layer .lmdd-mirror{
+    z-index:1;
+    position:absolute;
+    margin:0;
+    pointer-events:none;
+    transition: top 00s, left 00s !important;
+    opacity:0.5;
+}
+.lmdd-shadow{
+    opacity:0.5;
+}
+.lmdd-hidden{
+    visibility:hidden;
+}
+
+/**
+*
+* drag & Drop CSS
+*
+*/
+#features{
+    margin-bottom:15px;
+}
+.feature-grid{
+    display:flex;
+    padding:7px;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    border: 1px dashed black;
+}
+.feature-item{
+    padding:5px;
+    margin:5px;
+    font-size:15px;
+    border: 3px solid white;
+    flex: 1 1 auto;
+    vertical-align: middle;
+    cursor:move;
+}
+.feature{
+    color:white;
+    text-align:center;
+    padding: 5px;
+}
+
+.example {
+    background-color: white;
+}
+
+.simple-grid{
+    display:flex;
+    padding:7px;
+    max-width: 350px;
+    flex-flow: row wrap;
+    justify-content:space-around;
+}
+.grid-item{
+    text-align: center;
+    vertical-align: middle;
+    line-height:78px;
+    margin:5px;
+    width:78px;
+    height:78px;
+    color:white;
+    font-size:15px;
+    border: 3px solid white;
+    cursor:move;
+}
+
+#handle-example {
+    display: block;
+    /*justify-content: space-around;*/
+    padding: 0px !important;
+}
+
+.handle-grid {
+    /*flex: 1 1 50%;*/
+    display: block;
+    padding: 7px;
+    /*max-width: 350px;*/
+    /*flex-flow: column nowrap;*/
+    background-color: white;
+    /*margin-right: 1px;*/
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    min-height: 670px;
+}
+
+.handle-grid .card{
+    padding: 10px;
+    border-radius: 0px;
+    margin: 5px 0;
+}
+.handle-grid .card .card-title{
+    color: #fff;
+    font-weight: 400;
+    font-size: 24px;
+
+}
+
+.leads .card{
+    background-color: #afd987;
+    color: #fff;
+
+}
+
+.opportunity .card{
+    background-color: #7fc280;
+    color: #fff;
+
+}
+
+.quote .card{
+    background-color: #5cbcb2;
+    color: #fff;
+
+}
+
+.won .card{
+    background-color: #62c8dc;
+    color: #fff;
+}
+
+
+.handle-item {
+    padding: 3px;
+    margin: 5px 0px;
+    color: white;
+    font-size: 15px;
+    background-color: grey;
+    /*border: 3px solid lightgoldenrodyellow;*/
+}
+
+.leads .handle-item {
+    background-color: #afd987;
+    color: #fff;
+
+}
+
+.opportunity .handle-item {
+    background-color: #7fc280;
+
+}
+
+.quote .handle-item {
+    background-color: #5cbcb2;
+
+}
+
+.won .handle-item {
+    background-color: #62c8dc;
+    /*text-decoration: line-through;*/
+}
+/*
+.lead .handle-item {
+    background-color: #72bee4;
+}
+
+.opportunity .handle-item {
+    background-color: #ff80ab;
+}
+
+.quote .handle-item {
+    background-color: lightseagreen;
+}
+
+.won .handle-item {
+    background-color: #3f51b5;
+    color: gray;
+    text-decoration: line-through;
+}
+
+*/
+.handle {
+    cursor: move;
+}
+
+.task {
+    border: 1px dotted white;
+    padding: 5px;
+}
+
+.title {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    margin: 5px;
+}
+
+.task .leadinfo{
+    margin: 0px 5px 0px 20px;
+}
+
+.task .leadinfo .leadinfoline{
+
+}
+
+.task .leadinfo .leadinfoline .key{
+    font-size: 16px;
+    font-weight: 400;
+    padding: 3px 0px 3px 5px;
+}
+
+.task .leadinfo .leadinfoline .value{
+    font-size: 14px;
+    font-weight: 400;
+    padding: 3px 0px 3px 5px;
+}
+
+.nestable{
+    display:flex;
+    flex-flow:row wrap;
+    border:3px solid white !important;
+}
+.nested-item{
+    flex: 1 1 calc(33.3333% - 14px);
+    min-height:50px;
+    border: 3px solid white;
+    padding: 7px;
+    margin:7px;
+    cursor:move;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    font-size: 15px;
+}
+.w-1-1{
+    flex: 1 1 100%;
+    border: 5px solid white;
+    padding: 7px;
+}
+
+.github-link{
+    position:absolute;
+    top:12px;
+    right:32px;
+    height:32px;
+    width:32px;
+    filter:invert(100%);
+    transition:0.3s;
+}
+@media only screen and (min-width: 601px){
+    .github-link {
+        top: 16px;
+    }
+}
+
+.github-link:hover {
+    transform: rotate(360deg);
+}
+
+.collapsible.popout > li {
+    background-color: #F0F0F0;
+}
+
+/*td, th {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    padding-left: 20px !important;
+    padding-right: 5px !important;
+}*/
+
+.obd {
+    list-style-type: decimal !important;
+}
+
+.ubd {
+    list-style-type: disc !important;
+}
+.lmddwrap{
+    padding:5px !important;
+}
+.lmdd-block .actionhandler{
+    padding: 0 5px;
+}
+
+.actionhandler .actionlist .aicon{
+    cursor: pointer;
+    color: #fff;
+}
+
+#handle-example-lmddClone {
+    top: 15px !important;
+    left: 5px !important;
+}
+
+.sidebar[data-active-color="rose"] li.active > a {
+    background-color: #4096ec !important;
+    box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px #d2d2d2 !important;
+}
+.card .header-primary, .card .content-primary {
+    background: linear-gradient(60deg, #4096ec , #4096ec) !important;
+}
+.btn.btn-primary, .btn.btn-primary:hover, .btn.btn-primary:focus, .btn.btn-primary:active, .btn.btn-primary.active, .btn.btn-primary:active:focus, .btn.btn-primary:active:hover, .btn.btn-primary.active:focus, .btn.btn-primary.active:hover, .open > .btn.btn-primary.dropdown-toggle, .open > .btn.btn-primary.dropdown-toggle:focus, .open > .btn.btn-primary.dropdown-toggle:hover, .navbar .navbar-nav > li > a.btn.btn-primary, .navbar .navbar-nav > li > a.btn.btn-primary:hover, .navbar .navbar-nav > li > a.btn.btn-primary:focus, .navbar .navbar-nav > li > a.btn.btn-primary:active, .navbar .navbar-nav > li > a.btn.btn-primary.active, .navbar .navbar-nav > li > a.btn.btn-primary:active:focus, .navbar .navbar-nav > li > a.btn.btn-primary:active:hover, .navbar .navbar-nav > li > a.btn.btn-primary.active:focus, .navbar .navbar-nav > li > a.btn.btn-primary.active:hover, .open > .navbar .navbar-nav > li > a.btn.btn-primary.dropdown-toggle, .open > .navbar .navbar-nav > li > a.btn.btn-primary.dropdown-toggle:focus, .open > .navbar .navbar-nav > li > a.btn.btn-primary.dropdown-toggle:hover {
+    background-color:  #4096ec !important;
+
+}
+.btn.btn-primary, .navbar .navbar-nav > li > a.btn.btn-primary {
+    box-shadow: 0 2px 2px 0 #d2d2d2, 0 3px 1px -2px #d2d2d2, 0 1px 5px 0 #d2d2d2 !important;
+}
+.dataTables_paginate a {
+    margin-right: 10px !important;
+    cursor: pointer !important;
+}
