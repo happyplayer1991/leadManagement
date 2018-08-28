@@ -43,9 +43,11 @@
                             @endforeach
                         </tbody>
                     </table>
+                @if(!$getAllClients->isEmpty())
                     <div class="pull-right" id="act" >
                         {{$getAllClients->links()}}
                     </div>
+                @endif
                 </div>
             </div>
         </div>
