@@ -142,7 +142,7 @@ class UserRepository implements UserRepositoryContract
         if($file = $requestData->hasFile('image_path')) {
             $file = $requestData->file('image_path');
             $fileName = $file->getClientOriginalName();
-            $destinationPath = public_path().'/images/';
+            $destinationPath = public_path().'/images/avatar/';
             $file->move($destinationPath,$fileName);
             $user->image_path = $fileName;
         }

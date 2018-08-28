@@ -1,5 +1,8 @@
 /public/build
 /public/build/*
+/public/images/avatar/
+/public/images/logo/
+/node_modules
 /vendor
 .idea/*
 /node_modules
@@ -10,3 +13,4 @@ bower_components
 
 .docker/flarepoint-db/*
 /nbproject/private/
+package-lock.json

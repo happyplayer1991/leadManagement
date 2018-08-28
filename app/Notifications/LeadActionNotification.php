@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -67,7 +68,7 @@ class LeadActionNotification extends Notification
             case 'created':
                 $text = __(':name was created by :creator', [
                 'name' => $this->lead->name,
-                'creator' => Auth()->user()->name
+                'creator' => Auth()->check() ? Auth()->user()->name : 'unauthorized user'
                 ]);
                 break;
             case 'updated':
@@ -87,15 +88,13 @@ class LeadActionNotification extends Notification
         }
         return [
             'assigned_user' => $notifiable->id, //Assigned user ID
-            'created_user' => Auth()->user()->id,
-            'company_id' => Auth::user()->company_id,
+            'created_user' => $this->lead->user_id,
+            'company_id' => $this->lead->company_id,
             'message' => $text,
             'type' => Lead::class,
             'type_id' =>  $this->lead->id,
             'url' => url('leads/' . $this->lead->id),
             'action' => $this->action
-
         ];
-    
     }
 }

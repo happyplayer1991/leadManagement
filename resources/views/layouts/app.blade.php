@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>Opal CRM | Login</title>
+    <title>Opal CRM</title>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" rel='stylesheet' type='text/css'>
@@ -13,7 +13,7 @@
     <!-- Styles -->
     <link href="{{ URL::asset('css/all.css')}}" rel="stylesheet" type="text/css">
     <link href="{{ URL::asset('css/material-kit.css')}}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('css/custom.css') }}">
+    <link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet" type="text/css">
     {{-- <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> --}}
      <meta name="csrf-token" content="{{ csrf_token() }}">
 

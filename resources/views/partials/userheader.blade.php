@@ -13,27 +13,11 @@
     </div>
     <div class="col-md-6">
         <div class="profilepic">
-            <!-- @if($contact->image_path != "")
-                <img class="profilepicsize img-responsive img-circle" src="../resources/assets/images/Media/{{$contact->image_path}}" >
-            @else
-                <img class="profilepicsize img-responsive img-circle" src="resource_path().'/assets/images/default_avatar.jpg'" >
-            @endif -->
             @if($contact->image_path != "")
-
-             <img class="profilepicsize img-responsive img-circle"
-                 
-                 src="{{public_path()}}/images/$contact->image_path}}"/>  
-
-
-             <!-- class="profilepicsize img-responsive img-circle" -->
-                 
-                 <!-- <img src="pp.png" >  -->
-
-
-                 @else
-               
-                 <img src="{{public_path()}}/images/maxresdefault.jpg" />
-                 @endif
+                <img class="profilepicsize img-responsive img-circle" src="{{asset('/images/avatar/'.$contact->image_path)}}"/>
+            @else
+                <img src="{{asset('images/maxresdefault.jpg')}}" />
+            @endif
         </div>
     </div>
     <div class="col-md-3">
@@ -42,9 +26,6 @@
 </div>
 
 <div class="col-lg-12" >
-
-
-    {{--<h3>{{ $contact->nameAndDepartment }} </h3>--}}
     <div class="col-lg-6">
         <dl>
             <dt class="">

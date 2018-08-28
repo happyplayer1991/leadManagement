@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\LeadAction;
+use App\Models\User;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Models\Activity;
@@ -33,7 +34,7 @@ class LeadActionLog
             case 'created':
                 $text = __('lead was created by admin', [
                     'lead' => $event->getLead()->name,
-                    'admin' => Auth()->user()->name
+                    'admin' => Auth()->check() ? Auth()->user()->name : 'unauthorized user'
                 ]);
                 break;
             case 'updated':
@@ -55,7 +56,7 @@ class LeadActionLog
          $activityinput = array_merge(
              [
                  'text' => $text,
-                 'user_id' => Auth()->id(),
+                 'user_id' => $event->getLead()->user_id,
                  'source_type' => Lead::class,
                  'source_id' =>  $event->getLead()->id,
                  'action' => $event->getAction()

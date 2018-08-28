@@ -239,8 +239,6 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-    	
-    	
         return view('users.edit')
             ->withUser($this->users->find($id))
             ->withRoles($this->roles->listAllRoles())

@@ -15,10 +15,9 @@
     <link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet" type="text/css">
 
     <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,700" rel="stylesheet">
-
-
-
+    <script src="{{asset('js/jquery.min.js')}}" type="text/javascript"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
+    <meta name="company" content="{{Auth::user()->company_id}}" />
 <style>
     .dot {
     height: 10px;
@@ -55,62 +54,24 @@
     Tip 2: you can also add an image using data-image tag
     Tip 3: you can change the color of the sidebar with data-background-color="white | black"
 -->
+    <!--
         <div class="logo">
+        @if(Session::get('logo_img') == "")
             <a href="/" class="simple-text logo-mini">
                 OC
             </a>
             <a href="/" class="simple-text logo-normal">
                 Opal CRM
             </a>
+        @else
+            <a href="/">
+                <img src="{{asset('images/logo/'.Session::get('logo_img'))}}" alt="" onerror="javascript:$(this).hide();">
+            </a>
+        @endif
         </div>
+    -->
         <div class="sidebar-wrapper">
-            <div class="user">
-                <div class="photo text-center">
-                    <i class="material-icons">face</i>
-                    <!--img src="../assets/img/faces/avatar.jpg"-->
-                </div>
-                <div class="info">
-                    <a data-toggle="collapse" href="#collapseExample" class="collapsed" aria-expanded="false">
-                            <span>
-                                Hello! {{\Auth::user()->name}}
-                                <b class="caret"></b>
-                            </span>
-                    </a>
-                    <div class="clearfix"></div>
-                    <div class="collapse" id="collapseExample" aria-expanded="false" style="height: 0px;">
-                        <ul class="nav">
-                            <li class="{{ Request::is('users/*') ? 'active' : '' }}">
-                                <a href="{{route('users.show', \Auth::id())}}">
-                                    <span class="sidebar-mini"> MP </span>
-                                    <span class="sidebar-normal"> My Profile </span>
-                                </a>
-                            </li>
-                           
-                            <li class="{{ Request::is('users/*/edit') ? 'active' : '' }}">
-                                <a href="{{route('users.edit', \Auth::id())}}">
-                                    <span class="sidebar-mini"> EP </span>
-                                    <span class="sidebar-normal"> Edit Profile </span>
-                                </a>
-                            </li>
-                             <!-- @if(\Auth::user()->random_unique_number != '') -->
-                           <!--  @else -->
-                            <!-- <li class="{{ Request::is('users/*/edit') ? 'active' : '' }}">
-                                <a href="{{route('users.edit', \Auth::user()->id)}}">
-                                    <span class="sidebar-mini"> CP </span>
-                                    <span class="sidebar-normal"> Change Password </span>
-                                </a>
-                            </li> -->
-                          <!--   @endif -->
-                            <!--  <li>
-                                  <a href="#">
-                                      <span class="sidebar-mini"> S </span>
-                                      <span class="sidebar-normal"> Settings </span>
-                                  </a>
-                              </li>-->
-                        </ul>
-                    </div>
-                </div>
-            </div>
+        
             <ul class="nav">
                 <li class="{{ Request::is('dashboard') ? 'active' : '' }} {{ Request::is('/') ? 'active' : '' }}">
                     <a href="{{ route('pages.dashboard')}}">
@@ -287,16 +248,6 @@
     <div class="main-panel">
         <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
             <div class="container-fluid">
-                <div class="navbar-wrapper">
-                <div class="navbar-minimize">
-                    <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
-                        <i class="material-icons visible-on-sidebar-regular">more_vert</i>
-                        <i class="material-icons visible-on-sidebar-mini">view_list</i>
-                    </button>
-                </div>
-                <a class="navbar-brand" href="#">@yield('heading')</a>
-                </div>
-
 
                 <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="sr-only">Toggle navigation</span>
@@ -340,36 +291,71 @@
                                 <div class="dropdown-item dropdown-header">
                                     <h4 style="text-align:center;font-weight: 600; color: #ffffff;">Notifications</h4>
                                 </div>
-<div class="dropdown-item" style="overflow-x: hidden; max-height: 400px; overflow-y: scroll">
+                                <div class="dropdown-item" style="overflow-x: hidden; max-height: 400px; overflow-y: scroll">
                                 @foreach($notifications as $notification)
-                                <li class="dropdown-item" style="display: block; margin-left: -4px;">
-                                    <?php if ($notification->data['company_id'] == auth()->user()->company_id) {
-                                    
-                                    $array = explode(' ', $notification->data['message']);
-                                    switch ($array[0]){
-                                        case "Quotation" : $background = '#5cbcb2'; $color='whitesmoke'; $letter = 'Q'; break;
-                                        case "Activity" : $background = '#7fc280'; $color='whitesmoke'; $letter = 'A'; break;
-                                        case "Product" : $background = '#62c8dc'; $color='whitesmoke'; $letter = 'P'; break;
-                                        case "Tax" : $background = 'grey'; $color='whitesmoke'; $letter = 'T'; break;
-                                        default : $background = '#8fb16f'; $color='whitesmoke'; $letter = 'L';
-                                        }
-                                    }
-                                    ?>
+                                    <li class="dropdown-item" style="display: block; margin-left: -4px;">
+                                        @if ($notification->data['company_id'] == auth()->user()->company_id)
+                                        <?php
+                                            $array = explode(' ', $notification->data['message']);
+                                            switch ($array[0]){
+                                                case "Quotation" : $background = '#5cbcb2'; $color='whitesmoke'; $letter = 'Q'; break;
+                                                case "Activity" : $background = '#7fc280'; $color='whitesmoke'; $letter = 'A'; break;
+                                                case "Product" : $background = '#62c8dc'; $color='whitesmoke'; $letter = 'P'; break;
+                                                case "Tax" : $background = 'grey'; $color='whitesmoke'; $letter = 'T'; break;
+                                                default : $background = '#8fb16f'; $color='whitesmoke'; $letter = 'L';
+                                            }
+                                        ?>
+
                                         <div class="alert" style="top:0px;margin: 2px 4px; background-color: {{$color}}">
-                                        <div class="btn  btn-just-icon btn-round" style="    font-size: 14px;color:{{$color}}; background-color: {{$background}}; margin-right: 2%">{{$letter}}</div>
-                                        <a href="{{ route('notification.read', ['id' => $notification->id])  }}" class="list" onClick="postRead({{ $notification->id }})">
-                                        <b><font  style="color:{{$background}}; font-weight: 400;">{{ $notification->data['message']}}</font></b></a>&nbsp;
-                                        <a class="pull-right"  href="{{ route('notification.asread', ['id' => $notification->id])}}" onClick="postRead({{ $notification->id }})">
-                                        <button type="button" class="close-alert" style="color: black; margin-top: 95%">×</button></a>
-                                        </p>
+                                            <div class="btn  btn-just-icon btn-round" style="    font-size: 14px;color:{{$color}}; background-color: {{$background}}; margin-right: 2%">{{$letter}}</div>
+                                            <a href="{{ route('notification.read', ['id' => $notification->id])}}" class="list" onClick="postRead({{$notification->id}})">
+                                                <b><span  style="color:{{$background}}; font-weight: 400;">{{ $notification->data['message']}}</span></b>
+                                            </a>&nbsp;
+                                            <a class="pull-right"  href="{{route('notification.asread', ['id' => $notification->id])}}" onClick="postRead({{$notification->id }})">
+                                                <button type="button" class="close-alert" style="color: black; margin-top: 95%">×</button>
+                                            </a>
                                         </div>
-
-                                </li>
-
+                                        @endif
+                                    </li>
                                 @endforeach
-</div>
+                                </div>
                             </ul>
+                        </li>
+                        <li>
+                            <div class="user">
+                                <div class="photo text-center">
+                                    <i class="material-icons">face</i>
+                                </div>
+                                <div class="info">
+                                    <a data-toggle="collapse" href="#collapseExample" class="collapsed" aria-expanded="false">
+                                            <span>
+                                                Hello! {{\Auth::user()->name}}
+                                                <b class="caret"></b>
+                                            </span>
+                                    </a>
+                                    <div class="clearfix"></div>
+                                    <div class="collapse" id="collapseExample" aria-expanded="false" style="height: 0px;">
+                                        <ul class="nav">
+                                            <li class="{{ Request::is('users/*') ? 'active' : '' }}">
+                                                <a href="{{route('users.show', \Auth::id())}}">
+                                                    <span class="sidebar-mini"> MP </span>
+                                                    <span class="sidebar-normal"> My Profile </span>
+                                                </a>
+                                            </li>
+                                        
+                                            <li class="{{ Request::is('users/*/edit') ? 'active' : '' }}">
+                                                <a href="{{route('users.edit', \Auth::id())}}">
+                                                    <span class="sidebar-mini"> EP </span>
+                                                    <span class="sidebar-normal"> Edit Profile </span>
+                                                </a>
+                                            </li>
 
+                                        
+                                        </ul>
+                                        
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                         @push('scripts')
                         <script>
@@ -429,22 +415,20 @@
             </div>
         </nav>
 
-
-
-
         <div class="content">
             @yield('content')
+            @if(Session::has('notification_allowed') && Session::get('notification_allowed') == '1')
+            <div id="notification">
+                <notification></notification>
+            </div>
+            @endif
         </div>
         <footer class="footer">
             <div class="container-fluid">
-
-
-
                 <nav class="pull-left">
                     <ul>
                         <li>
                             <a href=" https://kloudportal.com/opalcrm-lead-management-crm-software/" target="_blank">Home</a>
-
                         </li>
                         <li>
                             <a href="https://kloudportal.com/" target="_blank">
@@ -466,45 +450,42 @@
 
         </footer>
         <div class="backdrop"></div>
-        {{--<div class="fab child" data-subitem="1"><span>New Lead</span></div>--}}
-        <div>
 
-            <input type="submit" class="btn btn-primary fab child" data-subitem="2" action="{{url('activities/create')}}" method="get" id="modal_fade"  value="Add Activity"></input></div>
         <div>
-
-            <input type="submit" class="btn btn-primary fab child" data-subitem="1" action="{{url('leads/create')}}" method="get" id="modal_fade"  value="New Lead"></input></div>
+            <input type="submit" class="btn btn-primary fab child" data-subitem="2" action="{{url('activities/create')}}" method="get" id="modal_fade" value="Add Activity">
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary fab child" data-subitem="1" data-toggle="modal" data-target="#create_lead_modal">New Lead</button>
+        </div>
 
         <div class="fab" id="masterfab" style="width: 62px; height: 58px;"><span style="vertical-align: super;">+</span></div>
     </div>
 
 </div>
 
-<div id="modal_window">
-</div>
+@include('leads.create')
+<div id="modal_window"></div>
 
-
-<script type="text/javascript" src="{{ URL::asset('js/dashboard-vendor.js')}}"></script>
-
-<script type="text/javascript" src="{{ URL::asset('js/custom.js')}}"></script>
-{{--<script src="{{ URL::asset('js/material-timeline.js')}}"></script>--}}
-<script src="{{ URL::asset('js/dataTables.responsive.min.js')}}"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-{{--<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>--}}
-{{--<script src="jQuery-plugin-progressbar.js"></script>--}}
-
-{{--<script src="{{ URL::asset('js/jquery.js')}}"></script>--}}
-{{--<script src="{{ URL::asset('js/moment.js')}}"></script>--}}
-{{--<script src="{{ URL::asset('js/fullcalender.js')}}"></script>--}}
-
-<!-- We assume vendor_scripts to be a folder with third party libraries
-     (often node_modules or bower_components) -->
-{{--<script src="vendor_scripts/jquery/dist/jquery.js"></script>--}}
-{{--<script src="vendor_scripts/corejs-typeahead/dist/typeahead.bundle.js"></script>--}}
-{{--<script src="vendor_scripts/typeahead-address-photon/dist/typeahead-address-photon.js"></script>--}}
-
-{{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--}}
-
-
+@if(Session::has('error_msg'))
+    <script type="text/javascript">
+        $(document).ready(function () {
+            toastr.error('', "{{Session::get('error_msg')}}");
+        })
+    </script>
+@endif
+@if(Session::has('success_msg'))
+    <script type="text/javascript">
+        $(document).ready(function () {
+            toastr.success('', "{{Session::get('success_msg')}}");
+        })
+    </script>
+@endif
+<script type="text/javascript" src="{{ asset('js/dashboard-vendor.js')}}"></script>
+<script src="{{ asset('js/dataTables.responsive.min.js')}}"></script>
+<script type="text/javascript" src="{{ asset('js/custom.js')}}"></script>
+@if(Session::has('notification_allowed') && Session::get('notification_allowed') == '1')
+<script type="text/javascript" src="{{ asset('js/app.js')}}"></script>
+@endif
 @stack('scripts')
 </body>
 </html>

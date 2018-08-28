@@ -9,9 +9,9 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Models\Lead;
+use Auth;
 
-
-class LeadAction
+class LeadAction implements ShouldBroadcast
 {
     private $lead;
     private $action;
@@ -46,6 +46,18 @@ class LeadAction
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new Channel('new-lead');
+    }
+
+    public function broadcastWith() {
+        if (Auth()->check())
+            $username = Auth()->user()->name;
+        else
+            $username = 'unauthorized user';
+        $msg = $username.' created a new lead "'.$this->lead->name.'".';
+        return [
+            'company_id' => $this->lead->company_id,
+            'msg' => $msg
+        ];
     }
 }

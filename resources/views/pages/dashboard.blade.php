@@ -3,39 +3,37 @@
     <marquee behaviour="scroll" direction="left" style="background-color: #4096ec;;color: white;font-weight: bold;height: 35px;
      padding-top: 7px; width: 70%; margin-left: 25%;  border-radius: 25px;">{{$scroll->announcement}}</marquee>
 @endif
+
 @extends('layouts.master')
+
 @section('heading')
     Dashboard
 @endsection
-@section('content')
-    <div class="col-sm-12 col-md-12 col-lg-12" style="margin-top: -3%">
-        <div class="" >
 
+@section('content')
+<!--
+    <div class="col-sm-12 col-md-12 col-lg-12" style="margin-top: -3%">
+        <div>
         @if(Auth::id() == 1)
             <div class="pull-left">
-                <p>Your account is about to expire. For renew Please Click<a id="paypalbutton" style="cursor: pointer; text-decoration: underline;">&nbsp;here</a></p></div>
-
+                <p>Your account is about to expire. For renew Please Click<a id="paypalbutton" style="cursor: pointer; text-decoration: underline;">&nbsp;here</a></p>
+            </div>
         @endif
-
         </div>
     </div>
+-->
 
-<form action="{{url('leads/create')}}" method="get" id="modal_fade" >
     <div class="pull-right">
-        <input type="submit" class="btn btn-primary" value="New Lead" >
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create_lead_modal">New Lead</button>
     </div>
-</form>
 
     <div id="ajaxContent">
         @include('pages.cardview')
-
     </div>
-
-
 @endsection
+
 @push('scripts')
     <script>
-        
         (function () {
             lmdd.set(document.getElementById('handle-example'), {
                 containerClass: 'handle-grid',
@@ -78,13 +76,7 @@
                         dragToWon(id,'Won');
                     }
                 }
-                // console.log("heloo...");
-
-
             })
         })();
-              
-
     </script>
-
 @endpush

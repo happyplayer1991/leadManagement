@@ -231,7 +231,7 @@ class InvoicesController extends Controller
         $data = array('name' => $lead->name,'primary_number' => $lead->primary_number, 'email' => $lead->email );
 
         $mail = explode(',', $request->emailInvoice);
-        Mail::send('invoicemail', $data, function($message) use ($data,$mail)
+        Mail::send('mail.invoicemail', $data, function($message) use ($data,$mail)
             {
                 $message->from('sowji.reddy09@gmail.com', "Sowjitha");
                 $message->subject("Welcome to Opal CRM");

@@ -3,6 +3,7 @@ namespace App\Repositories\Lead;
 
 use App\Models\Lead;
 use App\Models\Currency;
+use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\Industry;
 use App\Models\Product;
@@ -76,18 +77,18 @@ class LeadRepository implements LeadRepositoryContract
      */
     public function create($requestData)
     {
-         $email = $requestData['email'];
+        $email = $requestData['email'];
         $mobile = $requestData['primary_number'];
-         $name = $requestData['name'];
-         $company_id = \Auth::user()->company_id;
+        $name = $requestData['name'];
+        $company_id = array_key_exists('company_id', $requestData) ? $requestData['company_id'] : \Auth::user()->company_id;
 
-         if($name == ''){
-            return "emptyName";
-         }
+        $data['error'] = '';
+        if($name == ''){
+            $data['error'] = "Invalid Lead Name.";
+            return $data;
+        }
 
-         $data['error'] = '';
-
-         if($mobile != ''){
+        if($mobile != ''){
             $phone = Lead::where('primary_number',$mobile)->where('company_id',$company_id)->get();
            
             if(count($phone)>0){
@@ -95,23 +96,32 @@ class LeadRepository implements LeadRepositoryContract
                 return $data;
             }
         }
-        
+
         if($email != ''){
             $mail = Lead::where('email',$email)->where('company_id',$company_id)->get();
           
             if(count($mail)>0){
-              
-              $data['error'] = "Lead already exists with this e-mail address.";
+                $data['error'] = "Lead already exists with this e-mail address.";
                 return $data;
             }
         }
+        if (\Auth::check()) {
+            $user_id = \Auth::id();
+        } else
+            $user_id = 1;
 
-       
-        $lead = Lead::create($requestData);
+        $lead = new Lead();
+        $lead->email = $email;
+        $lead->primary_number = $mobile;
+        $lead->name = $name;
+        $lead->company_id = $company_id;
+        $lead->lead_type = $requestData['lead_type'];
+        $lead->user_id = $user_id;
+        $lead->industry_id = $user_id;
+        $lead->lead_number = Helper::leadNumberWithCompany($company_id);
+        $lead->save();
         event(new \App\Events\LeadAction($lead, self::CREATED));
-        $getAllLeads = $this->leadsBaseOnCompany();
-        
-        $data['html'] = view('pages.cardview')->with('getAllLeads',$getAllLeads)->render();
+
         $data['message'] = "Lead Added successfully";
         return $data;
     }

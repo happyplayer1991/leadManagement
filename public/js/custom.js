@@ -18,8 +18,9 @@ $('.fc-day').on('click', function(e){
   } );
 
 });
-    
 
+if (Notification.permission !== "granted")
+    Notification.requestPermission();
 
 jQuery(document).on('submit','#currency-form',function(currentObject) {
     currentObject.preventDefault();
@@ -502,11 +503,8 @@ function notifications(){
     });
 }
 
-
-
-
 $(document).ready(function () {
-
+/*
     var numInput = document.querySelector('input');
 
     // Listen for input event on numInput.
@@ -517,7 +515,7 @@ $(document).ready(function () {
             // If we have no match, value will be empty.
             this.value = "";
         }
-    }, false)
+    }, false)*/
 
     $('#edit-user').submit(function () {
 
@@ -633,7 +631,7 @@ $(window).ready(function () {
             success: function (response) {
                 console.log(response);
                 $('#modal_window').html(response);
-                $('#create_modal').modal('show');
+                $('#ajax_modal').modal('show');
             },
             error: function (xhr, status, error) {
                 console.log(xhr.responseText);
@@ -1392,8 +1390,6 @@ $(document).ready(function () {
                     toastr.success('',messages);
                     location.reload();
                 }
-
-
             },
             error: function (xhr, status, error) {
                 console.log(xhr.responseText);
@@ -1420,8 +1416,6 @@ $(document).ready(function () {
                     toastr.success('',messages);
                     location.reload();
                 }
-
-
             },
             error: function (xhr, status, error) {
                 console.log(xhr.responseText);
@@ -1429,71 +1423,60 @@ $(document).ready(function () {
         });
     });
 
-
     $(document).on('click', '#add_lead', function () {
-
         var name = $('#customer_name').val();
         var personal_number = $('#mobile_num').val();
-        var mobile_number = $('#secondary_number').val();
         var email = $('#cust_email').val();
+        var data = $(this).closest('form').serialize();
+        var action = $(this).closest('form').attr('action');
 
-        var data = $('#lead_form').serialize();
-
-        if(name == ''){
+        if(name === ''){
             toastr.error('', "Please fill name field");
             return false;
         }
-        if(personal_number == ''){
+        if(personal_number === ''){
             toastr.error('', "Please fill Mobile Number");
             return false;
         }
         var pattern = /^\s*(?:\+?(\d{1,3}))?[- (]*(\d{3})[- )]*(\d{3})[- ]*(\d{4})(?: *[x/#]{1}(\d+))?\s*$/;
-        var valid1=pattern.test(personal_number);
-        if (!valid1) {
+        if (!pattern.test(personal_number)) {
             toastr.error('', 'Please enter a valid mobile number');
             return false;
         }
-        if(email == ''){
+        if(email === ''){
             toastr.error('', "Please fill Email Address");
             return false;
         }
-        var value = $('#cust_email').val();
-        var valid = validateEmail(value);
-        if (!valid) {
+
+        if (!validateEmail(email)) {
             toastr.error('',"Please enter a valid email");
             return false;
         }
+
+        var that = this;
         $.ajax({
-            url: "leads",
+            url: action,
             type: 'POST',
             data: data,
-            // data: ajax_data ,
-            success: function (response) {
-
-                console.log(response);
-
-                if(response == "existMail"){
-                    //alert();
-                    var messages = "Lead already exists with this e-mail address.";
-                    toastr.error('', messages);
-                }else if (response == "existPhone"){
-                    var messages = "Lead already exists with this phone Number.";
-                    toastr.error('', messages);
-                }else{
-                    console.log(response);
-                    var messages = "Lead Added Successfully";
-                    $('#create_client').hide();
-                    toastr.success('', messages);
-                    location.reload();
-
+            success: function (resp) {
+                if(resp['result'] === 'success'){
+                    $(that).closest('form')[0].reset();
+                    toastr.success('', resp['msg']);
+                    if ($('#create_lead_modal').length > 0)
+                        $('#create_lead_modal').modal('hide');
                 }
+                else
+                    toastr.error('', resp['msg']);
+                return false;
             },
             error: function (xhr, status, error) {
+                toastr.error('', 'Internal Sever Error.');
                 console.log(xhr.responseText);
+                return false;
             }
         });
+        return false;
     });
-
 
     $(document).on('click', '#convert_oppurtunity', function(){
         var id = $('#convert_lead_id').val();
@@ -2046,17 +2029,16 @@ $(document).on('click','#publish',function() {
     }
 
 });
+$('#logo_img').on('change', function () {
+    if (this.files && this.files[0]) {
+        var reader = new FileReader();
 
+        reader.onload = function (e) {
+            $('.logo-preview img').show();
+            $('.logo-preview img').attr('src', e.target.result);
+            $('.logo-preview img').load();
+        };
 
-
-// var app = new Vue({
-//     el: '#wrapper',
-//     components: {
-//         graphline,
-//         doughnut,
-//         message
-//     }
-// });
-
-
-
+        reader.readAsDataURL(this.files[0]);
+    }
+});

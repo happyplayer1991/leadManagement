@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use Auth;
 use Session;
 use App\Http\Requests;
@@ -39,7 +40,6 @@ class SettingsController extends Controller
      */
     public function index()
     {
-
         $company_id =  \Auth::user()->company_id;
 
         $products = Product::select('*')->where('company_id',$company_id)->get();
@@ -59,10 +59,6 @@ class SettingsController extends Controller
                 ->with('scrollText',$scrollText)
                 ->with('currency',$currency)
                 ->with('c',$c);
-        // return view('settings.index')
-        //     ->withSettings($this->settings->getSetting())
-        //     ->withPermission($this->roles->allPermissions())
-        //     ->withRoles($this->roles->allRoles());
     }
 
     /**
@@ -72,6 +68,7 @@ class SettingsController extends Controller
     public function updateOverall(UpdateSettingOverallRequest $request)
     {
         $this->settings->updateOverall($request);
+
         Session::flash('flash_message', 'Overall settings successfully updated');
         return redirect()->back();
     }
@@ -83,8 +80,15 @@ class SettingsController extends Controller
     public function permissionsUpdate(Request $request)
     {
         $this->roles->permissionsUpdate($request);
+
         Session::flash('flash_message', 'Role is updated');
         return redirect()->back();
     }
 
+    public function updateCustomSettings(Request $request) {
+        Session::put('logo_img', $this->settings->updateCustom($request));
+
+        Session::flash('flash_message', 'Logo is updated.');
+        return redirect()->back();
+    }
 }

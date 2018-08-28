@@ -1,5 +1,5 @@
 
-<div id="create_modal" class="modal fade" role="dialog">
+<div id="ajax_modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->

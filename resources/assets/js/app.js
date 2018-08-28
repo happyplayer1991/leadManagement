@@ -5,10 +5,12 @@
  */
 
 require('./bootstrap');
+require('./vendor/jquery.dataTables.min');
 import ElementUI from 'element-ui';
-import graphline from './components/Graphline.vue';
+/*import graphline from './components/Graphline.vue';
 import doughnut from './components/Doughnut.vue';
-import message from './components/Message.vue';
+import message from './components/Message.vue';*/
+import notification from './components/Notification.vue';
 import 'element-ui/lib/theme-default/index.css';
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -83,13 +85,15 @@ $(function () {
 $('.search-select')
   .dropdown({
     direction: 'upward'
-  })
-;
+  });
+
+Vue.component('notification', require('./components/Notification.vue'));
 var app = new Vue({
-    el: '#wrapper',
+    el: '#notification',
     components: {
-      graphline,
-      doughnut,
-      message
+    /*    graphline,
+        doughnut,
+        message,*/
+        notification
     }
 });

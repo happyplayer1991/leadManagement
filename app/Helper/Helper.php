@@ -12,14 +12,10 @@ use App\Models\Invoice;
 
 
 class Helper
-{ 
-
-
-	public static function leadNumber(){
+{
+    public static function leadNumber(){
 		$company_id = \Auth::user()->company_id;
 		$lead_details = Lead::where('company_id',$company_id)->latest()->first();
-
-
 
 		if($lead_details == ''){
 			$lead_number = "L0001";
@@ -36,8 +32,6 @@ class Helper
 	public static function leadNumberWithCompany($company_id){
 		//$company_id = \Auth::user()->company_id;
 		$lead_details = Lead::where('company_id',$company_id)->latest()->first();
-
-
 
 		if($lead_details == ''){
 			$lead_number = "L0001";

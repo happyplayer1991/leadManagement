@@ -18,7 +18,7 @@
 //    Route::resource('example', 'ItemController@testdata');
 // });
 
-
+Route::get('/', 'PagesController@index');
 Route::get('converter',function(){
     return view('layouts.converter');
 });
@@ -117,27 +117,24 @@ Route::group(['prefix' => 'layouts'], function () {
 
 Route::get('ajax', 'LeadsController@ajax_data');
 
-Route::auth();
+Route::get('/{company}/new-lead', 'LeadsController@newLeadForUnknownUser');
+Route::get('/login', function () {
+    return redirect('/');
+});
 Route::post('/login', 'Auth\LoginController@login');
+Route::post('/register', 'RegisterController@saveData');
 Route::get('/logout', 'Auth\LoginController@logout');
 Route::post('/subscription','LeadsController@subscription');
-Route::get('/paypalform','LeadsController@paypalForm');
-Route::get('/register', 'RegisterController@register');
-Route::post('/register', 'RegisterController@saveData');
-Route::group(['middleware' => ['auth']], function () {
+Route::get('/paypalform', 'LeadsController@paypalForm');
 
+Route::group(['middleware' => ['auth', 'revalidate']], function () {
     /**
      * Main
      */
-    Route::get('/', 'PagesController@dashboard');
     Route::get('dashboard', 'PagesController@dashboard')->name('pages.dashboard');
 
     Route::get('/paypal','LeadsController@paypalSucess');
     Route::get('/paypalCancel','LeadsController@paypalCancel');
-    
-
-    
-
     /** Reports-pdfview */
     Route::get('reportview',array('as'=>'pdfview','uses'=>'ItemController@pdfview'));
     Route::get('reportview1',array('as'=>'pdfview_activity','uses'=>'ItemController@pdfview_activity'));
@@ -243,9 +240,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::patch('/dropLead','LeadsController@dropLead');
         Route::post('/returnLead/{id}','LeadsController@returnLead');
         Route::post('/assign_user/{id}','LeadsController@userAssign');
+        Route::post('/getCustomers', 'LeadsController@getCustomers');
+        Route::post('/getContacts', 'LeadsController@getContacts');
+        Route::post('/getAllLeads', 'LeadsController@getAllLeads');
     });
     Route::resource('leads', 'LeadsController');
-
 
     Route::resource('otherclients', 'OtherLeadsController');
 
@@ -258,6 +257,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/', 'SettingsController@index')->name('settings.index');
         Route::patch('/permissionsUpdate', 'SettingsController@permissionsUpdate');
         Route::patch('/overall', 'SettingsController@updateOverall');
+        Route::post('/custom', 'SettingsController@updateCustomSettings');
     });
 
 
@@ -411,3 +411,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('taxs','TaxController');
     Route::get('/delete/{id}','TaxController@destroy')->name('taxs.delete');
 });
+
+Route::post('/leads', 'LeadsController@store')->name('leads.store');

@@ -35,14 +35,10 @@ use App\Repositories\User\UserRepositoryContract;
 use App\Http\Requests\Lead\UpdateLeadFollowUpRequest;
 use App\Repositories\Client\ClientRepositoryContract;
 use App\Repositories\Setting\SettingRepositoryContract;
+use Mail;
 
 class LeadsController extends Controller
 {
-
-
-
-
-
     protected $leads;
     protected $clients;
     protected $settings;
@@ -71,36 +67,14 @@ class LeadsController extends Controller
      */
     public function index()
     {
-
         $user_id = \Auth::id();
-
         $company_id = \Auth::user()->company_id;
-
-
-
         $allleads = Lead::select('id','name')->where('company_id',$company_id)->where('drop_status','=','')->paginate(10);
-
         $leads = Lead::select('id','name')->where('drop_status','=','')->where('company_id',$company_id)->where('user_id',$user_id)->paginate(10);
-
         $wonLeads = Lead::select('id','name')->where('lead_stage','=','Won')->where('company_id',$company_id)->where('user_id',$user_id)->paginate(10);
+        $users = User::select('*')->where('company_id',$company_id)->get();
 
-        $getAllClients = DB::table('leads as l')
-            ->join('users as u','l.user_id','=','u.id')
-            ->where('l.company_id','=', $company_id)
-            ->select('u.name as user_name','l.*')
-            ->paginate(10);
-
-        $getAllLeads = DB::table('leads as l')
-            ->join('users as u','l.user_id','=','u.id')
-            ->where('l.company_id','=', $company_id)
-            ->where('l.user_id','=',$user_id)
-            ->select('u.name as user_name','l.*')
-            ->paginate(10);
-        $users = User::select('*')->where('company_id',$company_id)->get();  
-
-
-        return view('leads.index')->with('getAllClients',$getAllClients)->with('getAllLeads',$getAllLeads)->with('leads',$leads)->with('allleads',$allleads)->with('wonLeads',$wonLeads)->with('users',$users);
-
+        return view('leads.index')->with('leads',$leads)->with('allleads',$allleads)->with('wonLeads',$wonLeads)->with('users',$users);
     }
 
     /**
@@ -109,8 +83,6 @@ class LeadsController extends Controller
      */
     public function anyData()
     {
-
-
         $leads = Lead::select(
             ['id', 'address']//, 'user_created_id', 'client_id', 'user_assigned_id', 'contact_date']
         )->get();
@@ -138,9 +110,25 @@ class LeadsController extends Controller
             ->withLeadnumber(Helper::leadNumber())
             ->with('type','create')
             ->withIndustries($this->leads->listAllIndustries());
-
     }
 
+    public function newLeadForUnknownUser($company) {
+        $user = User::where('company_name', $company)->first();
+        if (!isset($user))
+            return redirect('/');
+
+        $data['company_id'] = $user->company_id;
+        $settings = Setting::where('company_id', $user->company_id)->first();
+        if (!isset($settings)) {
+            $data['logo_color'] = '';
+            $data['logo_img'] = '';
+        } else {
+            $data['logo_color'] = $settings->logo_color;
+            $data['logo_img'] = $settings->logo_img;
+        }
+
+        return view('leads.unauthorized', $data);
+    }
 
     public function edit($id)
     {
@@ -165,17 +153,36 @@ class LeadsController extends Controller
      */
     public function store(StoreLeadRequest $request)
     {
-        $getInsertedID = $this->leads->create($request->all());
+        $msg = $this->leads->create($request->all());
+        if ($msg['error'] != '')
+            return array('result'=>'error', 'msg'=>$msg['error']);
 
         $notes = new Note();
-        $notes->note = \Auth::user()->name." Created the Lead";
+        $notes->note = \Auth::check() ? \Auth::user()->name : 'Unauthorized User'." Created the Lead.";
         $notes->status = "created";
-        $notes->user_id = \Auth::id();
+        $notes->user_id = \Auth::check() ? \Auth::id() : 0;
         $notes->lead_id = $request->id;
-        $notes->company_id = \Auth::user()->company_id;
+        $notes->company_id = $request->has('company_id') ? $request->get('company_id') : \Auth::user()->company_id;
         $notes->save();
 
-        return $getInsertedID;
+        $settings = Setting::where('company_id', $notes->company_id)->first();
+        if (isset($settings)) {
+            if ($settings->notification_allowed == 1 || $settings->notification_allowed == 2) {
+                $mail = User::where('company_id', $notes->company_id)->pluck('email')->toArray();
+                $lead = Lead::where('name', $request->get('name'))->firstOrFail();
+                $data = array('type' => 'create', 'creator' => \Auth::check() ? \Auth::user()->name : 'Unauthorized User',
+                    'lead' => $lead);
+
+                Mail::send('mail.lead', $data, function($message) use ($data,$mail)
+                {
+                    $message->from('sowji.reddy09@gmail.com', "Sowjitha");
+                    $message->subject("New Lead is created.");
+                    $message->to($mail);
+                });
+            }
+        }
+
+        return array('result'=>'success', 'msg'=>$msg['message']);
     }
 
     public function updateAssign($id, Request $request)
@@ -273,7 +280,7 @@ class LeadsController extends Controller
         $lead->save();
 
         $getAllLeads = $this->leads->leadsBaseOnCompany();
-        
+
         return view('pages.cardview')->with('getAllLeads',$getAllLeads);
 
         // $id = $request->id;
@@ -294,8 +301,8 @@ class LeadsController extends Controller
         $products = Product::get(['id','product_name','price','description']);
         $currency = Currency::all();
         $taxs = Taxs::where('company_id',$company_id)->get();
-        
-        
+
+
         return view('quotations.quotation_popover')->with('leads',$leads)->with('quotation_number',$quotation_number)->with('products',$products)->with('currency',$currency)->with('taxs',$taxs);
     }
 
@@ -340,9 +347,9 @@ class LeadsController extends Controller
     }
 
 
-     public function userAssign($id, Request $request){      
+     public function userAssign($id, Request $request){
         //print_r($id);exit;
-        
+
         $lead_data = Lead::find($id);
         $lead_data->user_id = $request['user_id'];
         $lead_data->session_id = '';
@@ -355,7 +362,7 @@ class LeadsController extends Controller
         $notes->lead_id = $id;
         $notes->company_id = $lead_data->company_id;
         $notes->save();
-        
+
         return $id;
     }
 
@@ -382,7 +389,7 @@ class LeadsController extends Controller
     public function productInterest(){
 
         $company_id = \Auth::user()->company_id;
-         
+
         $view = Product::where('company_id',$company_id)->get();
         $product = Product::all();
         $ld = DB::select(DB::raw("SELECT p.product_name,count(l.id) as ltotal,p.id FROM leads as l LEFT JOIN products as p on l.interested_product = p.id GROUP BY p.id"));
@@ -415,7 +422,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
              }
 
              //quote
-             $skip = false; 
+             $skip = false;
            foreach ($qt as $key ) {
                 if( $key->product_name == $prod_name){
                     $skip = true; //no need to add. product is already available
@@ -429,7 +436,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
 
              //invoice
 
-             $skip = false; 
+             $skip = false;
            foreach ($in as $key ) {
                 if( $key->product_name == $prod_name){
                     $skip = true; //no need to add. product is already available
@@ -441,7 +448,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                   //print_r($ld);exit;
              }
         }
-        
+
 
             //for loop for product list
 
@@ -457,13 +464,13 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
     }
 
     public function leadCount($id) {
-        
+
         $leadDetails = DB::select(DB::raw("SELECT l.id,l.lead_number,l.name,l.created_at,l.company_name,p.product_name FROM leads as l LEFT JOIN products as p on l.interested_product = p.id where p.id=$id"));
         return view('layouts.intrestedlead')->with('leadDetails',$leadDetails);
     }
 
     public function quoteCount($id) {
-        
+
         $quotations = Quotation::all();
         $currency = Currency::all();
         $leads = Lead::all();
@@ -472,7 +479,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
     }
 
     public function invoiceCount($id) {
-        
+
         $invoices = Invoice::all();
         $currency = Currency::all();
         $leads = Lead::all();
@@ -527,7 +534,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
      public function ajax_data(){
 
        // print_r("sowjitha");exit;
-    
+
         $session_id = $_GET['session_id'];
         $company_id = $_GET['company_id'];
         $user_id = $_GET['user_id'];
@@ -535,31 +542,31 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
         $users = User::where('random_unique_number',$user_id)->pluck('id');
 
 
-        
+
         //print_r($users[0]);exit;
-        
-        
-    
-    
+
+
+
+
         $leads = Lead::select('*')->where('session_id','=',$session_id)->get();
-    
+
         if(count($leads)>0){
             foreach($leads as $lead){
                 $lead_id = $lead->id;
             }
-    
+
             $lead_data = Lead::find($lead_id);
 
             if(!empty($_GET['name'])){
-    
+
                 $lead_name = Lead::select('*')->where('name','=',$_GET['name'])->where('company_id',$company_id)->get();
-    
+
                 if(count($lead_name)>0){
-    
+
                 }else{
-                    
+
                     //$client_id_email = Client::select('email')->find($client_id);
-                    
+
                     if($lead_data->name == ''){ // change existing lead to Lead stage if he is interesed
                         $lead_data->name = $_GET['name'];
                         $lead_data->company_id = $_GET['company_id'];
@@ -568,7 +575,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                        // $lead_data->user_id = $users[0];
                         $lead_data->save();
                     }else{ //Add new lead.
-                        
+
                         if($lead_data->session_id == $session_id && $lead_data->name != $_GET['name']){
                             $session_id = uniqid();
                             $leads = new Lead();
@@ -577,26 +584,26 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                             $leads->company_id = $_GET['company_id'];
                             $leads->lead_stage = 'Lead';
                             $leads->user_id = $users[0];
-                            
+
                                 $leads->lead_number = Helper::leadNumberWithCompany($_GET['company_id']);
-                            
+
                             $leads->save();
                         }
-                        
+
                     }
                 }
             }
-    
+
             if(!empty($_GET['email'])){
-    
+
                 $lead_email = Lead::select('*')->where('email','=',$_GET['email'])->where('company_id',$company_id)->get();
-    
+
                 if(count($lead_email)>0){
-    
+
                 }else{
-                    
+
                     //$client_id_email = Client::select('email')->find($client_id);
-                    
+
                     if($lead_data->email == ''){
                         $lead_data->email = $_GET['email'];
                         $lead_data->company_id = $_GET['company_id'];
@@ -606,7 +613,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                        // $lead_data->user_id = $users[0];
                         $lead_data->save();
                     }else{
-                        
+
                         if($lead_data->session_id == $session_id && $lead_data->email != $_GET['email']){
                             $session_id = uniqid();
                             $leads = new Lead();
@@ -616,12 +623,12 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                             $leads->lead_stage = 'Lead';
                             //$leads->source_type = 'Web';
                             $leads->user_id = $users[0];
-                            
+
                                 $leads->lead_number = Helper::leadNumberWithCompany($_GET['company_id']);
-                            
+
                             $leads->save();
                         }
-                        
+
                     }
 //                  if(!empty($_GET['email'])){
 //                      $client_data->email = $_GET['email'];
@@ -629,15 +636,15 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
 //                  }
                 }
             }
-    
-    
+
+
             if(!empty($_GET['message'])){
                 $lead_message = Lead::select('*')->where('messages', '=',$_GET['message'])->where('company_id',$company_id)->get();
-    
+
                 if(count($lead_message)>0){
-    
+
                 }else{
-                    
+
                     if($lead_data->messages == ''){
                         $lead_data->messages = $_GET['message'];
                         $lead_data->company_id = $_GET['company_id'];
@@ -646,7 +653,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                         //$lead_data->user_id = $users[0];
                         $lead_data->save();
                     }else{
-                            
+
                         if($lead_data->session_id == $session_id && $lead_data->messages != $_GET['message']){
                             $session_id = uniqid();
                             $leads = new Lead();
@@ -656,29 +663,29 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
                             $leads->lead_stage = 'Lead';
                            // $leads->source_type = 'Web';
                             $leads->user_id = $users[0];
-                            
+
                                 $leads->lead_number = Helper::leadNumberWithCompany($_GET['company_id']);
-                            
+
                             $leads->save();
                         }
-                            
+
                     }
 
                 }
-    
+
             }
-    
-    
-    
-    
+
+
+
+
         }else{
-    
+
             $leads = new Lead();
             $leads->session_id = $session_id;
             $leads->user_id = $users[0];
             $leads->save();
         }
-    
+
     }
 
 
@@ -706,8 +713,8 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
 
     public function paypalSucess(Request $request){
         $user_id = Auth::id();
-       
-       
+
+
         $subscription = Subscriptions::where('user_id',$user_id)->latest()->first();
         $payment = Subscriptions::find($subscription->id);
         $payment->paypal_auth = $request['auth'];
@@ -729,7 +736,7 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
 
         $users = User::where('company_id',$payment->company_id)->update(array('date_expired' => $date));
 
-        return redirect('/'); 
+        return redirect('/');
 
     }
 
@@ -744,4 +751,227 @@ SELECT  DISTINCT q1.lead_id,q1.product_id,q1.quote_id,q1.quotation_number FROM q
          return view('layouts.paypalbutton')->with('type',$type);
     }
 
+    public function getCustomers(Request $request) {
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+
+        $search_item = explode(',', $request->get('search'));
+        $lead_name = $search_item[0];
+        $company = $search_item[1];
+
+        $total = DB::table('leads')
+            ->where('company_id', '=', \Auth::user()->company_id)
+            ->where('lead_stage', 'Won')
+            ->count();
+
+        $customers = DB::table('leads')
+            ->where('company_id','=', \Auth::user()->company_id)
+            ->where('lead_stage', 'Won');
+        if ($lead_name != '')
+            $customers = $customers->where('name', 'like', '%' . $lead_name . '%');
+        if ($company != '')
+            $customers = $customers->where('company_name', 'like', '%' . $company . '%');
+
+        $customers = $customers->get();
+        $total_filtered = sizeof($customers);
+
+        $data = array();
+        for ($i = $start; $i < min($start + $length, $total_filtered); $i ++) {
+            $temp = array('<div class="btn btn-success btn-just-icon btn-round"><a href="'.\URL::to('leads/'.$customers[$i]->id).'" style="color: white">W</a></div>',
+                '<a href="'.\URL::to('leads/'.$customers[$i]->id).'">'.$customers[$i]->name.'('.$customers[$i]->lead_number.')</a>',
+                $customers[$i]->company_name);
+            array_push($data, $temp);
+        }
+
+        $res = array(
+            'draw' => $draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total_filtered,
+            'data' => $data
+        );
+
+        echo json_encode($res);
+    }
+
+    public function getContacts(Request $request) {
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+
+        $search_item = explode(',', $request->get('search'));
+        $lead_name = $search_item[0];
+        $company = $search_item[1];
+        $status = $search_item[2];
+
+        $total = DB::table('leads')
+            ->where('company_id', '=', \Auth::user()->company_id)
+            ->count();
+
+        $customers = DB::table('leads')
+            ->where('company_id','=', \Auth::user()->company_id);
+
+        if ($lead_name != '')
+            $customers = $customers->where('name', 'like', '%' . $lead_name . '%');
+        if ($company != '')
+            $customers = $customers->where('company_name', 'like', '%' . $company . '%');
+        switch ($status) {
+            case 'Pending':
+                $customers = $customers->where([['lead_stage', 'Lead'], ['drop_status', '']])
+                    ->orWhere('l.lead_stage', 'Opportunity');
+                break;
+            case 'Quote':
+                $customers = $customers->Where([['lead_stage', 'Quote'], ['drop_status', '']]);
+                break;
+            case 'Won':
+                $customers = $customers->Where('lead_stage', 'Won');
+                break;
+            case 'Lost':
+                $customers = $customers->where([['drop_status', '!=', ''], ['drop_status', '!=', 'Not-Qualifield']]);
+                break;
+            case 'NotQualified':
+                $customers = $customers->where('drop_status', 'Not-Qualifield');
+                break;
+            default:
+                break;
+        }
+
+        $customers = $customers->get();
+        $total_filtered = sizeof($customers);
+
+        $data = array();
+        for ($i = $start; $i < min($start + $length, $total_filtered); $i ++) {
+            if($customers[$i]->drop_status == '') {
+                if ($customers[$i]->lead_stage == 'Won'){
+                    $class_name = 'btn-warning';
+                    $title = 'P';
+                } else {
+                    $class_name = 'btn-success';
+                    $title = 'W';
+                }
+            } else if($customers[$i]->drop_status == 'Not-Qualifield') {
+                $class_name = 'btn-danger';
+                $title = 'NQ';
+            } else {
+                $class_name = 'btn-danger';
+                $title = 'L';
+            }
+
+            $temp = array(
+                '<div class="btn '.$class_name.' btn-just-icon btn-round" style="font-size: 14px;font-weight: bold;"><a href="'.\URL::to('leads/'.$customers[$i]->id).'" style="color: white">'.$title.'</a></div>',
+                '<a href="'.\URL::to('leads/'.$customers[$i]->id).'">'.$customers[$i]->name.'('.$customers[$i]->lead_number.')</a>',
+                $customers[$i]->company_name, $customers[$i]->lead_stage);
+
+            if($customers[$i]->drop_status == '')
+                array_push($temp, '');
+            else
+                array_push($temp, '<a><i class="material-icons" style="font-size:16px;cursor: pointer;" onclick="returnLead('.$customers[$i]->id.')" >refresh</i></a>');
+            array_push($data, $temp);
+        }
+
+        $res = array(
+            'draw' => $draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total_filtered,
+            'data' => $data
+        );
+
+        echo json_encode($res);
+    }
+
+    public function getAllLeads(Request $request) {
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+
+        $search_item = explode(',', $request->get('search'));
+        $lead_name = $search_item[0];
+        $company = $search_item[1];
+        $status = $search_item[2];
+
+        $total = DB::table('leads')
+            ->where('company_id',\Auth::user()->company_id)
+            ->where('user_id', \Auth::user()->id)
+            ->count();
+
+        $customers = DB::table('leads')
+            ->where('company_id', \Auth::user()->company_id)
+            ->where('user_id', \Auth::user()->id);
+
+        if ($lead_name != '')
+            $customers = $customers->where('name', 'like', '%' . $lead_name . '%');
+        if ($company != '')
+            $customers = $customers->where('company_name', 'like', '%' . $company . '%');
+        switch ($status) {
+            case 'Pending':
+                $customers = $customers->where([['lead_stage', 'Lead'], ['drop_status', '']])
+                    ->orWhere('l.lead_stage', 'Opportunity');
+                break;
+            case 'Quote':
+                $customers = $customers->Where([['lead_stage', 'Quote'], ['drop_status', '']]);
+                break;
+            case 'Won':
+                $customers = $customers->Where('lead_stage', 'Won');
+                break;
+            case 'Lost':
+                $customers = $customers->where([['drop_status', '!=', ''], ['drop_status', '!=', 'Not-Qualifield']]);
+                break;
+            case 'NotQualified':
+                $customers = $customers->where('drop_status', 'Not-Qualifield');
+                break;
+            default:
+                break;
+        }
+
+        $customers = $customers->get();
+        $total_filtered = sizeof($customers);
+
+        $data = array();
+        for ($i = $start; $i < min($start + $length, $total_filtered); $i ++) {
+            if($customers[$i]->drop_status == '') {
+                if ($customers[$i]->lead_stage == 'Won'){
+                    $class_name = 'btn-warning';
+                    $title = 'P';
+                } else {
+                    $class_name = 'btn-success';
+                    $title = 'W';
+                }
+            } else if($customers[$i]->drop_status == 'Not-Qualifield') {
+                $class_name = 'btn-danger';
+                $title = 'NQ';
+            } else {
+                $class_name = 'btn-danger';
+                $title = 'L';
+            }
+
+            $temp = array(
+                '<div class="btn '.$class_name.' btn-just-icon btn-round" style="font-size: 14px;font-weight: bold;"><a href="'.\URL::to('leads/'.$customers[$i]->id).'" style="color: white">'.$title.'</a></div>',
+                '<a href="'.\URL::to('leads/'.$customers[$i]->id).'">'.$customers[$i]->name.'('.$customers[$i]->lead_number.')</a>',
+                $customers[$i]->company_name, $customers[$i]->lead_stage,
+                '<a action="'.url('leads/'.$customers[$i]->id.'/edit').'" class="btn-icon aicon" id="modal_fade" style="cursor: pointer"><i class="material-icons ">create</i></a>');
+
+            if(\Entrust::hasRole('administrator')) {
+                $str = '<select name="user_id" class="form-control activity_status" onchange="assign_users('.$customers[$i]->id.',this)">';
+                $str .= '<option hidden="true">Select Users...</option>';
+
+                $users = User::select('*')->where('company_id', \Auth::user()->company_id)->get();
+                foreach($users as $user)
+                    $str .= '<option value="'.$user->id.'">'.$user->name.'</option>';
+
+                $str .= '</select>';
+                array_push($temp , $str);
+            }
+
+            array_push($data, $temp);
+        }
+
+        $res = array(
+            'draw' => $draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total_filtered,
+            'data' => $data
+        );
+
+        echo json_encode($res);
+    }
 }

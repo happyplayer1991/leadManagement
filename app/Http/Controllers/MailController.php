@@ -54,7 +54,7 @@ class MailController extends Controller
 		//view()->share('items',$leadDetails);
 		$data = array('name'=>$username , 'address' => $lead , 'user' => $userData);
 		$items = $leadDetails;
-		Mail::send('attachmail', $data, function ($message) use ($users , $username , $items , $clientData , $userData , $voucher_code , $cityname){
+		Mail::send('mail.attachmail', $data, function ($message) use ($users , $username , $items , $clientData , $userData , $voucher_code , $cityname){
 			
 			$message->to($users, $username)->subject
 						('Quotation for '.$username.'  at  '.$cityname);

@@ -1,6 +1,6 @@
 .material-icons.md-18 {
-  font-size: 18px;
-}
+                   font-size: 18px;
+                 }
 
 .material-icons.md-24 {
   font-size: 24px;
@@ -345,13 +345,78 @@ thead {
   }
 }
 
-div.dataTables_wrapper div.dataTables_paginate {
-  display: none !important;
-}
-
 .pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
   background-color: #4096ec;
   border-color: #4096ec;
   color: #FFFFFF;
   box-shadow: 0 4px 5px 0 rgba(156, 39, 176, 0.14), 0 1px 10px 0 rgba(156, 39, 176, 0.12), 0 2px 4px -1px rgba(156, 39, 176, 0.2);
+}
+
+.logo-preview {
+  width: 200px;
+  height: 40px;
+  border: 1px solid orange;
+  border-radius: 5px;
+}
+.logo-preview img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.logo {
+  text-align: center;
+}
+.logo img {
+  width: 80%;
+  height: 40px;
+  object-fit: cover;
+}
+.dataTables_paginate a {
+  display: inline-block;
+  cursor: pointer !important;
+  border: 0;
+  border-radius: 30px !important;
+  transition: all .3s;
+  padding: 0 11px;
+  margin-left: 3px;
+  margin-right: 3px !important;
+  min-width: 30px;
+  height: 30px;
+  line-height: 30px;
+  color: #999999;
+  font-weight: 400;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: transparent;
+}
+.dataTables_paginate a.current{
+  background-color: #4096ec;
+  border-color: #4096ec;
+  color: #FFFFFF;
+  box-shadow: 0 4px 5px 0 rgba(156, 39, 176, 0.14), 0 1px 10px 0 rgba(156, 39, 176, 0.12), 0 2px 4px -1px rgba(156, 39, 176, 0.2);
+  cursor: default !important;
+}
+.dataTables_paginate a:not(.current):focus, .dataTables_paginate a:not(.current):hover {
+  background-color: #eee;
+  border-color: #ddd;
+}
+.dataTables_paginate a.disabled {
+  cursor: not-allowed !important;
+}
+.table tbody tr.loading td {
+  padding: 25px 0 !important;
+  text-align: center;
+}
+.table tbody tr.loading td i {
+  font-size: 24px;
+}
+.additional-action {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-top: 20px;
+}
+.additional-action form {
+  vertical-align: top;
+  display: inline-block;
 }
